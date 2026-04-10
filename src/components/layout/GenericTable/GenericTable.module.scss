@@ -97,13 +97,14 @@ $radius-dropdown: 4px;
   border: 1px solid $color-border;
   box-shadow: $shadow-table;
   border-radius: $radius-table;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
 .tableWrapper {
   overflow-x: auto;
   overflow-y: auto;
+  border-radius: $radius-table;
   
   &::-webkit-scrollbar {
     width: 6px;
@@ -148,7 +149,7 @@ $radius-dropdown: 4px;
 }
 
 .tableHeaderCell {
-  padding: 16px $cell-padding-horizontal;
+  padding: 20px 36px;
   text-align: left;
   font-size: $font-size-header;
   font-weight: $font-weight-semibold;
@@ -189,9 +190,9 @@ $radius-dropdown: 4px;
 }
 
 .filterButton {
-  width: 16px;
-  height: 16px;
-  padding: 0;
+  width: 22px;
+  height: 22px;
+  padding: 2px;
   background: none;
   border: none;
   cursor: pointer;
@@ -217,9 +218,12 @@ $radius-dropdown: 4px;
     border-radius: 2px;
   }
   
-  svg {
+  svg,
+  img {
     width: 100%;
     height: 100%;
+    display: block;
+    object-fit: contain;
   }
 }
 
@@ -233,10 +237,9 @@ $radius-dropdown: 4px;
 
 .filterDropdown {
   position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: $filter-dropdown-width;
+  top: 68px;
+  right: 20px;
+  width: 320px;
   max-height: 80vh;
   overflow-y: auto;
   background: $color-white;
@@ -244,32 +247,18 @@ $radius-dropdown: 4px;
   box-shadow: $shadow-filter;
   border-radius: $radius-dropdown;
   padding: 20px;
-  z-index: 100;
+  z-index: 200;
   animation: dropdownEnter $transition-base;
-  
-  // Arrow pointer
-  &::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%) rotate(45deg);
-    width: 12px;
-    height: 12px;
-    background: $color-white;
-    border-left: 1px solid rgba(84, 95, 125, 0.14);
-    border-top: 1px solid rgba(84, 95, 125, 0.14);
-  }
 }
 
 @keyframes dropdownEnter {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-8px) scale(0.96);
+    transform: translateY(-8px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -316,6 +305,18 @@ $radius-dropdown: 4px;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 24px;
+}
+
+.filterFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-size: 14px;
+  color: $color-secondary;
+  font-weight: $font-weight-medium;
 }
 
 .filterInput,
@@ -445,13 +446,17 @@ $radius-dropdown: 4px;
     background: rgba($color-accent, 0.02);
   }
   
-  &:not(:last-child) {
-    border-bottom: 1px solid $color-row-divider;
+  &:not(:last-child) .tableCell {
+    border-bottom: 1px solid #213F7D1A;
   }
 }
 
+.tableRowClickable {
+  cursor: pointer;
+}
+
 .tableCell {
-  padding: 16px $cell-padding-horizontal;
+  padding: 18px 36px;
   font-size: $font-size-body;
   font-weight: $font-weight-regular;
   line-height: $line-height-body;
@@ -497,8 +502,8 @@ $radius-dropdown: 4px;
 }
 
 .rowMenuButton {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   padding: 0;
   background: none;
   border: none;
@@ -523,9 +528,11 @@ $radius-dropdown: 4px;
     border-radius: 4px;
   }
   
-  svg {
+  svg,
+  img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
   }
 }
 
@@ -540,7 +547,7 @@ $radius-dropdown: 4px;
   box-shadow: $shadow-dropdown;
   border-radius: $radius-dropdown;
   padding: 12px 0;
-  z-index: 50;
+  z-index: 150;
   animation: menuEnter $transition-base;
   margin-top: 8px;
 }
@@ -598,10 +605,47 @@ $radius-dropdown: 4px;
   @include flex-center;
   flex-shrink: 0;
   
-  svg {
+  svg,
+  img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
   }
+}
+
+:global(.inline-link) {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+.statusTooltip {
+  max-width: 260px;
+  font-size: 12px !important;
+  line-height: 1.4;
+}
+
+.iconImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 .rowMenuItemLabel {
@@ -735,7 +779,7 @@ $radius-dropdown: 4px;
 @media (max-width: 768px) {
   .tableHeaderCell,
   .tableCell {
-    padding: 12px 16px;
+    padding: 14px 20px;
   }
   
   .filterDropdown {

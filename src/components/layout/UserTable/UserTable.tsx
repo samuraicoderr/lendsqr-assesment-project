@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FaEye, FaUserCheck, FaUserSlash } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 import GenericTable, {
 	Column,
 	FilterConfig,
@@ -103,6 +103,7 @@ const updateUserStatus = async (id: string, status: UserStatus): Promise<void> =
 };
 
 export default function UserTable() {
+  const router = useRouter();
 	const [rows, setRows] = useState<UserRecord[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [page, setPage] = useState(1);
@@ -137,8 +138,36 @@ export default function UserTable() {
 		() => [
 			{ key: "organization", title: "ORGANIZATION", sortable: true, filterable: true },
 			{ key: "username", title: "USERNAME", sortable: true, filterable: true },
-			{ key: "email", title: "EMAIL", sortable: true, filterable: true },
-			{ key: "phone_number", title: "PHONE NUMBER", sortable: true, filterable: true },
+			{
+				key: "email",
+				title: "EMAIL",
+				sortable: true,
+				filterable: true,
+				render: (value: string) => (
+					<a
+						href={`mailto:${value}`}
+						className="inline-link"
+						onClick={(event) => event.stopPropagation()}
+					>
+						{value}
+					</a>
+				),
+			},
+			{
+				key: "phone_number",
+				title: "PHONE NUMBER",
+				sortable: true,
+				filterable: true,
+				render: (value: string) => (
+					<a
+						href={`tel:${value.replace(/\s+/g, "")}`}
+						className="inline-link"
+						onClick={(event) => event.stopPropagation()}
+					>
+						{value}
+					</a>
+				),
+			},
 			{
 				key: "date",
 				title: "DATE JOINED",
@@ -202,15 +231,15 @@ export default function UserTable() {
 			{
 				id: "view-details",
 				label: "View Details",
-				icon: <FaEye />,
+				icon: <img src="/media/icons/eye.svg" alt="" width={16} height={16} />,
 				onClick: (row: UserRecord) => {
-					console.info("View user details", row);
+					router.push(`/dashboard/users/${row.id}`);
 				},
 			},
 			{
 				id: "blacklist-user",
 				label: "Blacklist User",
-				icon: <FaUserSlash />,
+				icon: <img src="/media/icons/userx.svg" alt="" width={16} height={16} />,
 				onClick: async (row: UserRecord) => {
 					setLoading(true);
 					await updateUserStatus(row.id, "Blacklisted");
@@ -220,7 +249,7 @@ export default function UserTable() {
 			{
 				id: "activate-user",
 				label: "Activate User",
-				icon: <FaUserCheck />,
+				icon: <img src="/media/icons/user-activate.svg" alt="" width={16} height={16} />,
 				onClick: async (row: UserRecord) => {
 					setLoading(true);
 					await updateUserStatus(row.id, "Active");
@@ -228,7 +257,7 @@ export default function UserTable() {
 				},
 			},
 		],
-		[runListUsers]
+		[router, runListUsers]
 	);
 
 	return (
@@ -240,6 +269,7 @@ export default function UserTable() {
 			showRowActions
 			onFilter={handleFilter}
 			onReset={handleReset}
+			onRowClick={(row) => router.push(`/dashboard/users/${row.id}`)}
 			loading={loading}
 			emptyMessage="No users found"
 			pagination={{

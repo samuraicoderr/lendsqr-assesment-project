@@ -1,14 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { 
-  FaFilter, 
-  FaEllipsisV, 
-  FaEye, 
-  FaUserSlash, 
-  FaUserCheck,
   FaCalendarAlt,
   FaChevronDown,
   FaTimes
 } from 'react-icons/fa';
+import { Tooltip } from 'react-tooltip';
 import styles from './GenericTable.module.scss';
 
 // ============================================
@@ -66,6 +62,7 @@ export interface GenericTableProps<T = any> {
   headerClassName?: string;
   rowClassName?: string;
   maxHeight?: string;
+  onRowClick?: (row: T, index: number) => void;
   pagination?: {
     currentPage: number;
     totalPages: number;
@@ -110,12 +107,20 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
         return {
           bg: 'rgba(84, 95, 125, 0.06)',
           color: '#545F7D',
-          label: status || 'Unknown'
+          label: status || 'Unknown',
+          tooltip: 'Status currently not classified.'
         };
     }
   };
 
   const config = getStatusConfig();
+  const tooltipByStatus: Record<string, string> = {
+    active: 'User can access and use the platform normally.',
+    inactive: 'User exists but cannot currently perform account activity.',
+    pending: 'User has incomplete onboarding or awaiting verification.',
+    blacklisted: 'User account is restricted from core actions for risk/compliance reasons.',
+  };
+  const tooltip = tooltipByStatus[normalizedStatus] ?? 'Status currently not classified.';
 
   return (
     <span 
@@ -124,6 +129,8 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
         backgroundColor: config.bg, 
         color: config.color 
       }}
+      data-tooltip-id="user-status-tooltip"
+      data-tooltip-content={tooltip}
     >
       {config.label}
     </span>
@@ -149,6 +156,7 @@ function GenericTable<T extends Record<string, any>>({
   headerClassName = '',
   rowClassName = '',
   maxHeight,
+  onRowClick,
   pagination
 }: GenericTableProps<T>) {
   // State
@@ -232,10 +240,7 @@ function GenericTable<T extends Record<string, any>>({
     });
   }, []);
 
-  // Get current filter config
-  const currentFilterConfig = useMemo(() => 
-    filters.find(f => f.key === activeFilterColumn),
-  [filters, activeFilterColumn]);
+  const isFilterDropdownOpen = activeFilterColumn !== null;
 
   // Sort data
   const sortedData = useMemo(() => {
@@ -294,99 +299,16 @@ function GenericTable<T extends Record<string, any>>({
                         aria-label={`Filter by ${column.title}`}
                         aria-expanded={activeFilterColumn === column.key}
                       >
-                        <FaFilter />
+                        <img src="/media/icons/filter-icon.svg" alt="" className={styles.iconImage} />
                       </button>
                     )}
                   </div>
-
-                  {/* Filter Dropdown */}
-                  {activeFilterColumn === column.key && currentFilterConfig && (
-                    <div 
-                      ref={filterDropdownRef}
-                      className={styles.filterDropdown}
-                      role="dialog"
-                      aria-label={`Filter ${currentFilterConfig.label}`}
-                    >
-                      <div className={styles.filterDropdownHeader}>
-                        <span className={styles.filterDropdownTitle}>{currentFilterConfig.label}</span>
-                        <button 
-                          className={styles.filterCloseButton}
-                          onClick={() => setActiveFilterColumn(null)}
-                          aria-label="Close filter"
-                        >
-                          <FaTimes />
-                        </button>
-                      </div>
-
-                      <div className={styles.filterDropdownContent}>
-                        {currentFilterConfig.type === 'select' ? (
-                          <div className={styles.filterSelectWrapper}>
-                            <select
-                              className={styles.filterSelect}
-                              value={filterValues[currentFilterConfig.key] || ''}
-                              onChange={(e) => handleFilterChange(currentFilterConfig.key, e.target.value)}
-                            >
-                              <option value="">Select {currentFilterConfig.label}</option>
-                              {currentFilterConfig.options?.map(option => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
-                            <FaChevronDown className={styles.filterSelectIcon} />
-                          </div>
-                        ) : currentFilterConfig.type === 'date' ? (
-                          <div className={styles.filterInputWrapper}>
-                            <input
-                              type="date"
-                              className={styles.filterInput}
-                              placeholder={currentFilterConfig.placeholder || `Enter ${currentFilterConfig.label}`}
-                              value={filterValues[currentFilterConfig.key] || ''}
-                              onChange={(e) => handleFilterChange(currentFilterConfig.key, e.target.value)}
-                            />
-                            <FaCalendarAlt className={styles.filterInputIcon} />
-                          </div>
-                        ) : (
-                          <input
-                            type={
-                              currentFilterConfig.type === 'number'
-                                ? 'number'
-                                : currentFilterConfig.type === 'email'
-                                  ? 'email'
-                                  : currentFilterConfig.type === 'phone'
-                                    ? 'tel'
-                                    : 'text'
-                            }
-                            className={styles.filterInput}
-                            placeholder={currentFilterConfig.placeholder || `Enter ${currentFilterConfig.label}`}
-                            value={filterValues[currentFilterConfig.key] || ''}
-                            onChange={(e) => handleFilterChange(currentFilterConfig.key, e.target.value)}
-                          />
-                        )}
-                      </div>
-
-                      <div className={styles.filterDropdownFooter}>
-                        <button 
-                          className={styles.filterResetButton}
-                          onClick={handleResetFilters}
-                        >
-                          Reset
-                        </button>
-                        <button 
-                          className={styles.filterApplyButton}
-                          onClick={handleApplyFilters}
-                        >
-                          Filter
-                        </button>
-                      </div>
-                    </div>
-                  )}
                 </th>
               ))}
               
               {showRowActions && rowActions.length > 0 && (
                 <th className={`${styles.tableHeaderCell} ${styles.actionsHeaderCell}`} style={{ width: '60px' }}>
-                  <span className={styles.headerTitle}>Actions</span>
+                  <span className={styles.visuallyHidden}>Row actions</span>
                 </th>
               )}
             </tr>
@@ -420,7 +342,16 @@ function GenericTable<T extends Record<string, any>>({
               sortedData.map((row, rowIndex) => (
                 <tr 
                   key={rowIndex} 
-                  className={`${styles.tableRow} ${rowClassName}`}
+                  className={`${styles.tableRow} ${onRowClick ? styles.tableRowClickable : ''} ${rowClassName}`}
+                  onClick={() => onRowClick?.(row, rowIndex)}
+                  onContextMenu={(e) => {
+                    if (!(showRowActions && rowActions.length > 0)) {
+                      return;
+                    }
+                    e.preventDefault();
+                    setActiveRowMenu(rowIndex);
+                    setActiveFilterColumn(null);
+                  }}
                 >
                   {columns.map(column => (
                     <td key={column.key} className={styles.tableCell}>
@@ -437,17 +368,26 @@ function GenericTable<T extends Record<string, any>>({
                     <td className={`${styles.tableCell} ${styles.actionsCell}`}>
                       <div 
                         className={styles.rowActionsWrapper}
+                        onClick={(e) => e.stopPropagation()}
+                        onContextMenu={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setActiveRowMenu(rowIndex);
+                        }}
                         ref={(el) => {
                           rowMenuRefs.current[rowIndex] = el;
                         }}
                       >
                         <button
                           className={`${styles.rowMenuButton} ${activeRowMenu === rowIndex ? styles.rowMenuButtonActive : ''}`}
-                          onClick={() => toggleRowMenu(rowIndex)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleRowMenu(rowIndex);
+                          }}
                           aria-label="More actions"
                           aria-expanded={activeRowMenu === rowIndex}
                         >
-                          <FaEllipsisV />
+                          <img src="/media/icons/vertical-three-dots.svg" alt="" className={styles.iconImage} />
                         </button>
 
                         {activeRowMenu === rowIndex && (
@@ -459,7 +399,8 @@ function GenericTable<T extends Record<string, any>>({
                               <button
                                 key={action.id}
                                 className={`${styles.rowMenuItem} ${action.className || ''}`}
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   action.onClick(row, rowIndex);
                                   setActiveRowMenu(null);
                                 }}
@@ -482,6 +423,89 @@ function GenericTable<T extends Record<string, any>>({
           </tbody>
         </table>
       </div>
+
+      {isFilterDropdownOpen && (
+        <div
+          ref={filterDropdownRef}
+          className={styles.filterDropdown}
+          role="dialog"
+          aria-label="User table filters"
+        >
+          <div className={styles.filterDropdownHeader}>
+            <span className={styles.filterDropdownTitle}>Filter Users</span>
+            <button
+              className={styles.filterCloseButton}
+              onClick={() => setActiveFilterColumn(null)}
+              aria-label="Close filter"
+            >
+              <FaTimes />
+            </button>
+          </div>
+
+          <div className={styles.filterDropdownContent}>
+            {filters.map((filter) => (
+              <div key={filter.key} className={styles.filterFieldGroup}>
+                <label className={styles.filterLabel}>{filter.label}</label>
+                {filter.type === 'select' ? (
+                  <div className={styles.filterSelectWrapper}>
+                    <select
+                      className={styles.filterSelect}
+                      value={filterValues[filter.key] || ''}
+                      onChange={(e) => handleFilterChange(filter.key, e.target.value)}
+                    >
+                      <option value="">Select {filter.label}</option>
+                      {filter.options?.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <FaChevronDown className={styles.filterSelectIcon} />
+                  </div>
+                ) : filter.type === 'date' ? (
+                  <div className={styles.filterInputWrapper}>
+                    <input
+                      type="date"
+                      className={styles.filterInput}
+                      placeholder={filter.placeholder || `Enter ${filter.label}`}
+                      value={filterValues[filter.key] || ''}
+                      onChange={(e) => handleFilterChange(filter.key, e.target.value)}
+                    />
+                    <FaCalendarAlt className={styles.filterInputIcon} />
+                  </div>
+                ) : (
+                  <input
+                    type={
+                      filter.type === 'number'
+                        ? 'number'
+                        : filter.type === 'email'
+                          ? 'email'
+                          : filter.type === 'phone'
+                            ? 'tel'
+                            : 'text'
+                    }
+                    className={styles.filterInput}
+                    placeholder={filter.placeholder || `Enter ${filter.label}`}
+                    value={filterValues[filter.key] || ''}
+                    onChange={(e) => handleFilterChange(filter.key, e.target.value)}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.filterDropdownFooter}>
+            <button className={styles.filterResetButton} onClick={handleResetFilters}>
+              Reset
+            </button>
+            <button className={styles.filterApplyButton} onClick={handleApplyFilters}>
+              Filter
+            </button>
+          </div>
+        </div>
+      )}
+
+      <Tooltip id="user-status-tooltip" place="top" className={styles.statusTooltip} />
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
