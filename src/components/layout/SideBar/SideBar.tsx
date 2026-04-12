@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './SideBar.module.scss';
 
@@ -258,14 +259,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
               {/* Dashboard */}
               <div className={styles.dashboard}>
-                <a 
-                  href="/dashboard" 
+                <Link
+                  href="/dashboard"
                   className={`${styles.navLink} ${isDashboardActive ? styles.navLinkActive : ''}`}
-                  onClick={(e) => {
+                  onClick={() => {
                     handleNavigate({ id: 'dashboard', label: 'Dashboard', iconSrc: `${iconBasePath}/home.svg`, href: '/dashboard' });
-                    if (onNavigate) {
-                      e.preventDefault();
-                    }
                   }}
                   aria-current={isDashboardActive ? 'page' : undefined}
                 >
@@ -275,7 +273,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <img src={`${iconBasePath}/home.svg`} alt="" className={styles.iconImage} />
                   </span>
                   <span className={`${styles.navLabel} ${isDashboardActive ? styles.navLabelActive : ''}`}>Dashboard</span>
-                </a>
+                </Link>
               </div>
 
               {/* Navigation Sections */}
@@ -303,14 +301,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                           const isActive = isPathActive(item.href) || (activeItem ? activeItem === item.id : false);
                           return (
                             <li key={item.id} className={styles.navItem} role="none">
-                              <a
+                              <Link
                                 href={item.href || '#'}
                                 className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
-                                onClick={(e) => {
+                                onClick={() => {
                                   handleNavigate(item);
-                                  if (onNavigate) {
-                                    e.preventDefault();
-                                  }
                                 }}
                                 role="menuitem"
                                 aria-current={isActive ? 'page' : undefined}
@@ -327,7 +322,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                 <span className={`${styles.navLabel} ${isActive ? styles.navLabelActive : ''}`}>
                                   {item.label}
                                 </span>
-                              </a>
+                              </Link>
                             </li>
                           );
                         })}

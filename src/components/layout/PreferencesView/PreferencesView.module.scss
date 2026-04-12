@@ -1,0 +1,318 @@
+@use "sass:color";
+@use "../../../styles/variables" as v;
+
+$color-primary: v.$color-primary;
+$color-secondary: v.$color-secondary;
+$color-accent: v.$color-accent;
+$color-white: v.$color-white;
+$color-border: v.$color-border;
+$font-family: v.$font-family-base;
+$shadow-card: v.$shadow-md;
+$transition-fast: v.$transition-fast;
+
+.container {
+	width: 100%;
+	max-width: 1200px;
+}
+
+.header {
+	margin-bottom: 30px;
+}
+
+.title {
+	font-family: $font-family;
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 28px;
+	color: $color-primary;
+	margin: 0 0 8px;
+}
+
+.subtitle {
+	font-family: $font-family;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 18px;
+	color: $color-secondary;
+}
+
+.sections {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.section {
+	background: $color-white;
+	border: 1px solid $color-border;
+	box-shadow: $shadow-card;
+	border-radius: 4px;
+	padding: 30px;
+}
+
+.sectionTitle {
+	font-family: $font-family;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 19px;
+	color: $color-primary;
+	margin: 0 0 24px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid rgba($color-primary, 0.06);
+}
+
+.fieldGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.field {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	padding: 12px 0;
+	border-bottom: 1px solid rgba($color-primary, 0.04);
+
+	&:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+
+	@media (width <= 640px) {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 12px;
+	}
+}
+
+.fieldInfo {
+	flex: 1;
+}
+
+.fieldLabel {
+	font-family: $font-family;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 16px;
+	color: $color-primary;
+	margin: 0 0 4px;
+}
+
+.fieldDescription {
+	font-family: $font-family;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 16px;
+	color: $color-secondary;
+}
+
+.fieldControl {
+	flex-shrink: 0;
+}
+
+// Toggle Switch
+.toggle {
+	position: relative;
+	width: 48px;
+	height: 26px;
+	cursor: pointer;
+}
+
+.toggleInput {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.toggleSlider {
+	position: absolute;
+	inset: 0;
+	background: rgba($color-secondary, 0.3);
+	border-radius: 13px;
+	transition: background $transition-fast;
+
+	&::before {
+		content: "";
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		left: 3px;
+		bottom: 3px;
+		background: $color-white;
+		border-radius: 50%;
+		transition: transform $transition-fast;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+	}
+}
+
+.toggleInput:checked + .toggleSlider {
+	background: $color-accent;
+
+	&::before {
+		transform: translateX(22px);
+	}
+}
+
+.toggleInput:focus-visible + .toggleSlider {
+	outline: 2px solid $color-accent;
+	outline-offset: 2px;
+}
+
+// Select Dropdown
+.select {
+	min-width: 200px;
+	height: 40px;
+	padding: 0 36px 0 16px;
+	border: 1px solid rgba($color-primary, 0.2);
+	border-radius: 8px;
+	font-family: $font-family;
+	font-size: 14px;
+	color: $color-secondary;
+	background: $color-white;
+	appearance: none;
+	cursor: pointer;
+	transition: all $transition-fast;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23545F7D' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+
+	&:hover {
+		border-color: rgba($color-primary, 0.4);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: $color-accent;
+		box-shadow: 0 0 0 3px rgba($color-accent, 0.1);
+	}
+
+	@media (width <= 640px) {
+		min-width: 100%;
+	}
+}
+
+// Text Input
+.input {
+	min-width: 200px;
+	height: 40px;
+	padding: 0 16px;
+	border: 1px solid rgba($color-primary, 0.2);
+	border-radius: 8px;
+	font-family: $font-family;
+	font-size: 14px;
+	color: $color-secondary;
+	background: $color-white;
+	transition: all $transition-fast;
+
+	&:hover {
+		border-color: rgba($color-primary, 0.4);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: $color-accent;
+		box-shadow: 0 0 0 3px rgba($color-accent, 0.1);
+	}
+
+	@media (width <= 640px) {
+		min-width: 100%;
+	}
+}
+
+// Save Button
+.saveSection {
+	display: flex;
+	justify-content: flex-end;
+	padding-top: 16px;
+}
+
+.saveButton {
+	height: 40px;
+	padding: 0 32px;
+	background: $color-accent;
+	border: none;
+	border-radius: 8px;
+	font-family: $font-family;
+	font-size: 14px;
+	font-weight: 600;
+	color: $color-white;
+	cursor: pointer;
+	transition: all $transition-fast;
+
+	&:hover {
+		background: color.adjust($color-accent, $lightness: -5%);
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba($color-accent, 0.3);
+	}
+
+	&:active {
+		transform: translateY(0);
+	}
+
+	&:focus-visible {
+		outline: 2px solid $color-accent;
+		outline-offset: 2px;
+	}
+}
+
+// Toast
+.toast {
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	padding: 14px 24px;
+	background: #39cd62;
+	color: $color-white;
+	border-radius: 8px;
+	font-family: $font-family;
+	font-size: 14px;
+	font-weight: 500;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	animation: slideIn 0.3s ease-out;
+	z-index: 9999;
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+// Skeleton
+.skeleton {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.skeletonCard {
+	height: 200px;
+	background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	border-radius: 4px;
+}
+
+@keyframes shimmer {
+	0% { background-position: 200% 0; }
+	100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.skeletonCard,
+	.toggleSlider,
+	.toggleSlider::before,
+	.saveButton {
+		transition: none;
+		animation: none;
+	}
+}

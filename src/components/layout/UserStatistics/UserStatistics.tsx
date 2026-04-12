@@ -116,7 +116,6 @@ const UserStatistics: React.FC<UserStatisticsProps> = ({ className = '' }) => {
           <div key={stat.id} className={styles.card}>
             <div 
               className={styles.iconWrapper}
-              style={{ backgroundColor: `${stat.color}15` }}
             >
               <img 
                 src={stat.icon} 

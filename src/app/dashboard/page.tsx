@@ -1,3 +1,9 @@
+import DashboardView from "@/components/layout/DashboardView/DashboardView";
+
 export default function DashboardPage() {
-	return <main>Dashboard Page</main>;
+	return (
+		<main style={{ padding: "32px" }}>
+			<DashboardView />
+		</main>
+	);
 }

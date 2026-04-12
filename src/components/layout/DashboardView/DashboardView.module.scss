@@ -1,0 +1,255 @@
+@use "sass:color";
+@use "../../../styles/variables" as v;
+
+$color-primary: v.$color-primary;
+$color-secondary: v.$color-secondary;
+$color-accent: v.$color-accent;
+$color-white: v.$color-white;
+$color-border: v.$color-border;
+$font-family: v.$font-family-base;
+$shadow-card: v.$shadow-md;
+$transition-base: v.$transition-base;
+
+.container {
+	width: 100%;
+	max-width: 1537px;
+}
+
+// Welcome Header
+.welcomeHeader {
+	margin-bottom: 40px;
+}
+
+.greeting {
+	font-family: $font-family;
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 28px;
+	color: $color-primary;
+	margin: 0 0 8px;
+}
+
+.dateText {
+	font-family: $font-family;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 16px;
+	color: $color-secondary;
+}
+
+// Content Grid
+.contentGrid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 26px;
+
+	@media (width <= 1024px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+// Cards
+.card {
+	background: $color-white;
+	border: 1px solid $color-border;
+	box-shadow: $shadow-card;
+	border-radius: 4px;
+	padding: 30px;
+}
+
+.cardTitle {
+	font-family: $font-family;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 19px;
+	color: $color-primary;
+	margin: 0 0 24px;
+}
+
+// Recent Activity
+.activityList {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.activityItem {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	padding: 16px 0;
+	border-bottom: 1px solid rgba($color-primary, 0.06);
+
+	&:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+
+	&:first-child {
+		padding-top: 0;
+	}
+}
+
+.activityIconWrapper {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.activityIcon {
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+}
+
+.activityContent {
+	flex: 1;
+	min-width: 0;
+}
+
+.activityText {
+	font-family: $font-family;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 18px;
+	color: $color-secondary;
+	margin: 0 0 4px;
+
+	strong {
+		font-weight: 600;
+		color: $color-primary;
+	}
+}
+
+.activityTime {
+	font-family: $font-family;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 14px;
+	color: $color-secondary;
+	opacity: 0.7;
+}
+
+// Quick Actions
+.quickActionsGrid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+
+	@media (width <= 640px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.quickAction {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 16px;
+	border: 1px solid $color-border;
+	border-radius: 8px;
+	cursor: pointer;
+	text-decoration: none;
+	transition: all $transition-base;
+	background: none;
+
+	&:hover {
+		border-color: $color-accent;
+		background: rgba($color-accent, 0.02);
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba($color-accent, 0.08);
+	}
+}
+
+.quickActionIcon {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+
+	img {
+		width: 20px;
+		height: 20px;
+		object-fit: contain;
+	}
+}
+
+.quickActionText {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.quickActionTitle {
+	font-family: $font-family;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 16px;
+	color: $color-primary;
+}
+
+.quickActionDesc {
+	font-family: $font-family;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 14px;
+	color: $color-secondary;
+}
+
+// Skeleton
+.skeletonCards {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 26px;
+	margin-bottom: 40px;
+
+	@media (width <= 1200px) {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	@media (width <= 640px) {
+		grid-template-columns: 1fr;
+	}
+}
+
+.skeletonCard {
+	height: 160px;
+	background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	border-radius: 4px;
+}
+
+.skeletonFullCard {
+	height: 320px;
+	background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s infinite;
+	border-radius: 4px;
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: 200% 0;
+	}
+
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.skeletonCard,
+	.skeletonFullCard,
+	.quickAction {
+		transition: none;
+		animation: none;
+	}
+}
