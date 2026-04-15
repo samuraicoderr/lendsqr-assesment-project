@@ -207,7 +207,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   /**
    * Initialize authentication state
    */
-  const initializeAuth = async () => {
+  const initializeAuth = useCallback(async () => {
     setLoading(true);
     tokenManager.syncAuthPresenceCookie();
 
@@ -215,8 +215,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       if (authUtils.isAuthenticated()) {
         await fetchCurrentUser();
       } else {
-        // Clear stale user data if token is invalid
-        if (user) {
+        // Clear stale user data if token is invalid.
+        if (useAuthStore.getState().user) {
           setUser(null);
         }
       }
@@ -241,7 +241,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [setLoading, setOnboardingToken, setPartialUser, setUser]);
 
   /**
    * Initialize auth state on mount
@@ -278,18 +278,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
    */
   const fetchCurrentUser = async (): Promise<void> => {
     try {
-      const response = await api.get<UserType>(BackendRoutes.me);
-      setUser(response.data);
+      const response = await api.get<UserType | { data: Partial<UserType> & { avatar?: string } }>(BackendRoutes.me);
+      const payload = response.data;
+      const rawUser: Partial<UserType> & { avatar?: string } =
+        payload && typeof payload === "object" && "data" in payload
+          ? (payload.data as Partial<UserType> & { avatar?: string })
+          : (payload as Partial<UserType> & { avatar?: string });
+
+      const normalizedUser: UserType = {
+        id: (rawUser as UserType).id ?? "mock-user",
+        username: rawUser.username ?? "",
+        email: rawUser.email ?? "",
+        phone_number: rawUser.phone_number ?? null,
+        first_name: rawUser.first_name ?? "",
+        last_name: rawUser.last_name ?? "",
+        profile_picture:
+          rawUser.profile_picture ??
+          rawUser.picture_url ??
+          rawUser.avatar ??
+          null,
+        picture_url:
+          rawUser.picture_url ??
+          rawUser.profile_picture ??
+          rawUser.avatar ??
+          null,
+        is_email_verified: rawUser.is_email_verified ?? true,
+        is_phone_number_verified: rawUser.is_phone_number_verified ?? false,
+        two_factor_enabled: rawUser.two_factor_enabled ?? false,
+        onboarding_status: rawUser.onboarding_status ?? OnboardingStatus.COMPLETED,
+        onboarding_flow: rawUser.onboarding_flow ?? [],
+        onboarding_token: rawUser.onboarding_token ?? null,
+      };
+
+      setUser(normalizedUser);
       updatePartialUser({
-        email: response.data.email,
-        phone: response.data.phone_number ?? undefined,
-        is_email_verified: response.data.is_email_verified,
-        is_phone_verified: response.data.is_phone_number_verified,
-        onboarding_status: response.data.onboarding_status,
-        onboarding_token: response.data.onboarding_token ?? undefined,
+        email: normalizedUser.email,
+        phone: normalizedUser.phone_number ?? undefined,
+        is_email_verified: normalizedUser.is_email_verified,
+        is_phone_verified: normalizedUser.is_phone_number_verified,
+        onboarding_status: normalizedUser.onboarding_status,
+        onboarding_token: normalizedUser.onboarding_token ?? undefined,
       });
-      if (response.data.onboarding_token) {
-        setOnboardingToken(response.data.onboarding_token);
+      if (normalizedUser.onboarding_token) {
+        setOnboardingToken(normalizedUser.onboarding_token);
       }
       setError(null);
     } catch (error) {

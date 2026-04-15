@@ -30,7 +30,7 @@ export interface ApiResponse<T = unknown> {
 
 // Configuration
 const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000/api/v1',
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || '',
   TIMEOUT: 30000, // 30 seconds
   MAX_RETRIES: 3,
   RETRY_DELAY: 1000,

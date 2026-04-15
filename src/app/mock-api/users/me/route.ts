@@ -10,7 +10,7 @@ export async function GET(){
             first_name: "Williams",
             last_name: "Samuel",
             avatar: appConfig.media.avatarExample,
-
+            profile_picture: appConfig.media.avatarExample,
         }
     });
 }

@@ -16,6 +16,10 @@ export function AuthProviderClient({
     <AuthProvider
       onLogout={() => {
         console.log("User logged out");
+        if (window.location.pathname.startsWith(Routes.login)) {
+          return;
+        }
+
         const next = buildLoginRedirectPath(
           `${window.location.pathname}${window.location.search}`,
           Routes.login

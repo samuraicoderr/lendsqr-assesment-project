@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import * as _meta from "./meta";
 import '@/styles/global.scss';
+import { AuthProviderClient } from "@/lib/api/auth/AuthProviderClient";
 
 
 const geistSans = Geist({
@@ -23,7 +24,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <AuthProviderClient>{children}</AuthProviderClient>
+      </body>
     </html>
   );
 }

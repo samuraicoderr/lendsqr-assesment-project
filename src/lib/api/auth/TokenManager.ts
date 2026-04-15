@@ -11,8 +11,15 @@ import { AUTH_PRESENCE_COOKIE } from "@/lib/api/auth/redirect";
 export interface TokenResponse {
   access: string;
   refresh: string;
-  access_expiry: string;
-  refresh_expiry: string;
+  access_expiry: string | number;
+  refresh_expiry: string | number;
+}
+
+interface RefreshTokenResponse {
+  access: string;
+  access_expiry: string | number;
+  refresh?: string;
+  refresh_expiry?: string | number;
 }
 
 export interface FirstFactorTokenResponse {
@@ -58,7 +65,7 @@ const TOKEN_CONFIG = {
 } as const;
 
 const baseURL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:9000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL || "";
 
 function buildURL(endpoint: string): string {
   // Remove leading slash from endpoint if present
@@ -68,6 +75,33 @@ function buildURL(endpoint: string): string {
   const cleanBaseURL = baseURL.endsWith("/") ? baseURL.slice(0, -1) : baseURL;
 
   return `${cleanBaseURL}/${cleanEndpoint}`;
+}
+
+function normalizeExpiryToUnixSeconds(expiry: string | number | null | undefined): number | null {
+  if (expiry === null || expiry === undefined) {
+    return null;
+  }
+
+  if (typeof expiry === "number") {
+    if (!Number.isFinite(expiry) || expiry <= 0) {
+      return null;
+    }
+
+    // Treat very large numbers as milliseconds.
+    return expiry > 1_000_000_000_000 ? Math.floor(expiry / 1000) : Math.floor(expiry);
+  }
+
+  const numeric = Number(expiry);
+  if (Number.isFinite(numeric) && numeric > 0) {
+    return numeric > 1_000_000_000_000 ? Math.floor(numeric / 1000) : Math.floor(numeric);
+  }
+
+  const parsed = Date.parse(expiry);
+  if (!Number.isNaN(parsed)) {
+    return Math.floor(parsed / 1000);
+  }
+
+  return null;
 }
 
 function setAuthPresenceCookie(isAuthenticated: boolean): void {
@@ -97,12 +131,12 @@ export const useTokenStore = create<TokenState>()(
 
       // Actions
       setTokens: (tokenResponse: TokenResponse) => {
-        const accessExpiry = parseInt(tokenResponse.access_expiry, 10);
-        const refreshExpiry = parseInt(tokenResponse.refresh_expiry, 10);
+        const accessExpiry = normalizeExpiryToUnixSeconds(tokenResponse.access_expiry);
+        const refreshExpiry = normalizeExpiryToUnixSeconds(tokenResponse.refresh_expiry);
 
         // Validate expiry times
         const now = Math.floor(Date.now() / 1000);
-        if (accessExpiry <= now || refreshExpiry <= now) {
+        if (!accessExpiry || !refreshExpiry || accessExpiry <= now || refreshExpiry <= now) {
           console.error("[TokenStore] Received expired tokens");
           throw new Error("Received expired tokens");
         }
@@ -292,13 +326,24 @@ class TokenManager {
       }
 
       console.log("✅ TOKEN REFERESHED");
-      const data: TokenResponse = await response.json();
+      const data: RefreshTokenResponse = await response.json();
+
+      const mergedTokens: TokenResponse = {
+        access: data.access,
+        access_expiry: data.access_expiry,
+        refresh: data.refresh ?? state.refresh,
+        refresh_expiry: data.refresh_expiry ?? state.refreshExpiry ?? 0,
+      };
+
+      if (!mergedTokens.refresh || !mergedTokens.refresh_expiry) {
+        throw new Error("Refresh response missing refresh token data");
+      }
 
       // Update tokens in store
-      this.setTokens(data);
+      this.setTokens(mergedTokens);
 
       console.log("[TokenManager] Token refreshed successfully");
-      return data.access;
+      return mergedTokens.access;
     } catch (error) {
       console.error("[TokenManager] Token refresh failed:", error);
 

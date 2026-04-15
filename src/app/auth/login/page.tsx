@@ -2,11 +2,17 @@
 
 import React, { useState } from 'react';
 import styles from '../Auth.module.scss';
-import Link from 'next/link';
 import FrontendLinks from '@/lib/FrontendLinks';
+import { useAuth } from '@/lib/api/auth/authContext';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { getSafeNextPath } from '@/lib/api/auth/redirect';
+import LoginGate from './LoginGate';
 
 
 const Login = () => {
+  const { login, error, clearError, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -39,18 +45,33 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    // Handle successful login
+
+    try {
+      clearError();
+      await login({ email, password });
+
+      const next = getSafeNextPath(
+        searchParams.get('next'),
+        FrontendLinks.dashboard
+      );
+
+      router.replace(next);
+    } catch {
+      // AuthContext already stores typed API error for UI display.
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const submitLoading = isLoading || authLoading;
 
   return (
         <>
+          <LoginGate />
           <h1 className={styles.title}>Welcome!</h1>
           <p className={styles.subtitle}>Enter details to login.</p>
 
@@ -77,6 +98,12 @@ const Login = () => {
                 </span>
               )}
             </div>
+
+            {error?.message && (
+              <div className={styles.errorMessage} role="alert" aria-live="polite">
+                {error.message}
+              </div>
+            )}
 
             <div className={styles.inputGroup}>
               <div className={styles.passwordWrapper}>
@@ -118,10 +145,10 @@ const Login = () => {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={isLoading}
-              aria-busy={isLoading}
+              disabled={submitLoading}
+              aria-busy={submitLoading}
             >
-              {isLoading ? (
+              {submitLoading ? (
                 <span className={styles.spinner}>
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
