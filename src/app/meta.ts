@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   // Basic metadata
@@ -66,16 +66,6 @@ export const metadata: Metadata = {
   // Manifest
   manifest: '/site.webmanifest',
   
-  // Theme
-  themeColor: '#39CDCC',
-  colorScheme: 'light',
-  
-  // Viewport (separate export in Next.js 14+)
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-  },
-  
   // Verification (optional - for Google Search Console, etc.)
   verification: {
     // google: 'your-google-verification-code',
@@ -92,9 +82,10 @@ export const metadata: Metadata = {
   },
 }
 
-// For Next.js 14+, viewport needs to be separate:
-export const viewport = {
+// Next.js requires viewport-related fields to be exported separately.
+export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  colorScheme: 'light',
   themeColor: '#39CDCC',
 }
