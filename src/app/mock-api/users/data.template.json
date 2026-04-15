@@ -38,9 +38,9 @@
     },
 
     "socials": {
-      "twitter": "@{{username()}}",
+      "twitter": "@{{firstName()}}",
       "facebook": "{{firstName()}} {{surname()}}",
-      "instagram": "@{{username()}}"
+      "instagram": "@{{firstName()}}"
     },
 
     "guarantors": [
