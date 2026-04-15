@@ -105,7 +105,7 @@ $auth-input-max-width: 447px;
   gap: 0.75rem;
   z-index: 10;
 
-  svg, img, .lendsqrLogo, .logoRight {
+  svg, img, .lendsqrLogo {
     width: 173px;
     height: 36px;
     flex-shrink: 0;
@@ -121,11 +121,24 @@ $auth-input-max-width: 447px;
 }
 
 .logoRight {
-                                                                                                                  display: block;
-  position: absolute;
-  top: 206px;
-  left: calc((100vw - $auth-input-max-width) / 2);
+  display: flex;
+  align-self: flex-start;
+  margin-bottom: 2rem;
   z-index: 5;
+  // border: thin solid red;
+  max-width: $auth-input-max-width;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  img,
+  .lendsqrLogo {
+    // width: min(173px, 48vw);
+    width: 140px;
+    height: auto;
+    max-width: 173px;
+    display: block;
+  }
 
   @media (min-width: $breakpoint-lg) {
     display: none;
@@ -155,6 +168,7 @@ $auth-input-max-width: 447px;
 // Right Section - Form
 .formSection {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;

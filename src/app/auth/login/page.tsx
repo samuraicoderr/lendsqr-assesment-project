@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/api/auth/authContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getSafeNextPath } from '@/lib/api/auth/redirect';
 import LoginGate from './LoginGate';
+import Link from 'next/link';
 
 
 const Login = () => {
@@ -138,9 +139,9 @@ const Login = () => {
               )}
             </div>
 
-            <a href={FrontendLinks.forgotPassword} className={styles.forgotLink}>
+            <Link href={FrontendLinks.forgotPassword} className={styles.forgotLink}>
               FORGOT PASSWORD?
-            </a>
+            </Link>
 
             <button
               type="submit"
