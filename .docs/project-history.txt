@@ -1,0 +1,240 @@
+dc6fb40 test: add Jest testing infrastructure and component tests
+- Configure Jest with next/jest and jsdom environment
+- Add clsx and tailwind-merge utilities for class merging
+- Add tests for ConfirmModal and StatusPill components
+- Add tests for BackendLinks and FrontendLinks route helpers
+- Add tests for auth redirect utilities and server error parsing
+- Add test script to Makefile
+
+
+8bfe4a4 fix: update metadata and viewport exports for Next.js compliance
+
+
+033cc24 feat: add mock API endpoints for loans, transactions, and loan requests
+- Add mock loan endpoints with list, detail, and PATCH support
+- Add mock transaction endpoints with list, detail, and PATCH
+- Add loan request data template for future implementation
+- Connect LoanDetail, LoansTable, and Transaction components to real APIs
+- Add caching and request deduplication to LoanService and TransactionService
+- Fix async params handling in dynamic route handlers
+
+
+528337d feat: integrate real API for user management and details
+- Replace mock user API with paginated REST endpoints
+- Add PATCH/PUT support for user updates via mock API
+- Connect UserTable to UserService with caching
+- Connect UserDetails to real user data and status updates
+- Add optimistic status changes with API persistence
+- Remove hardcoded auth layout logo
+- Improve error handling and loading states
+
+
+f6c7250 feat: integrate authentication into login and dashboard
+- Add LoginGate component for post-login redirect handling
+- Connect login page to AuthContext with real API calls
+- Protect dashboard routes with ProtectedRoute wrapper
+- Add mock auth endpoints for login and token refresh
+- Normalize user data shape across mock and real APIs
+- Improve token expiry parsing for mixed formats
+- Prevent logout redirect loop on login page
+
+
+cea23af feat: add complete API client and authentication system
+- Add ApiClient with token refresh, retries, and interceptors
+- Add TokenManager with Zustand store and auto-refresh scheduling
+- Add AuthProvider with login, registration, and MFA support
+- Add WebSocketManager with reconnection, heartbeat, and auth
+- Add NotificationContext with real-time WebSocket updates
+- Add service layer for auth, onboarding, OAuth, and settings
+- Add TypeScript type definitions for all auth flows
+- Add app configuration and utility functions
+
+
+81f60f8 feat: implement production-grade API client with auth and WebSocket
+- Add ApiClient with token refresh, retries, and error handling
+- Add TokenManager with Zustand store and auto-refresh scheduling
+- Add AuthProvider with login, registration, and MFA support
+- Add WebSocketManager with reconnection and heartbeat
+- Add NotificationContext with real-time updates
+- Add service layer for auth, onboarding, OAuth, and settings
+- Add TypeScript type definitions for all auth flows
+
+
+954ccd2 feat: add mock API endpoints and TypeScript type definitions
+- Add mock API route for /hello
+- Add mock API routes for /users with 500 sample records
+- Add comprehensive type definitions for core domain entities
+
+
+76f790a feat(notifications): enhance notifications panel with filtering and detail view
+
+
+ba8a01d feat(notifications): add notification panel and improve table interactions
+- Add NotificationsPanel component with notification bell in Navbar
+- Enable row click navigation on all data tables for better UX
+- Enhance StatisticsCards with hybrid icon system (fancy SVG + FontAwesome fallback)
+- Add missing karma, whitelist, and service account detail routes
+- Set unread notification badge count to 4 for demo
+
+
+d731104 feat(details): add comprehensive detail views for all dashboard modules
+- Create detail pages for audit logs, decision models, fees, guarantors
+- Add detail views for loans, loan products, loan requests, organizations
+- Add detail views for reports, savings, savings products, services
+- Add detail views for settlements, system messages, transactions
+- Create reusable DetailView SCSS module with tabs, cards, and timeline
+- Add ConfirmModal component for destructive actions (freeze, close, etc.)
+- Implement back navigation, status pills, and action buttons
+- Wire all detail pages via FrontendLinks and table row actions
+
+
+111baa3 feat(dashboard): implement comprehensive data tables for all modules
+- Add audit logs, decision models, fees, guarantors, karma, loans tables
+- Add loan products, loan requests, organizations, preferences, reports tables
+- Add savings products, savings accounts, services, settlements tables
+- Add service accounts, system messages, transactions, whitelist tables
+- Create reusable StatisticsCards component with loading/error states
+- Add StatusPill component for consistent status styling
+- Update Sidebar navigation to use Next.js Link components
+- Extend FrontendLinks with all dashboard route constants
+
+
+abbdf4c docs(db): add comprehensive ERD sketch of what I think the database schema would look like
+- Define users, organizations, staff, and product tables
+- Model loan and savings account lifecycle with schedules
+- Include guarantor tracking, decision models, and credit scoring
+- Add whitelist/blacklist (karma) system and audit logging
+- Document service integrations, notifications, and reports
+- Define all enums for status, types, and business rules
+
+Why? you may ask. It's to help guide me in creating the other UI screens.
+
+
+de9d890 refactor(scss): centralize design tokens and migrate to shared variables
+- Add global variables.scss and mixins.scss with design system tokens
+- Replace hardcoded colors, shadows, fonts with centralized variables
+- Use modern RGB color syntax and consistent spacing/breakpoint scales
+- Add reusable mixins for flex, focus-ring, truncation, and button states
+- Update all component styles to reference shared variables
+- Improve maintainability and reduce duplication across SCSS modules
+
+
+5834d46 chore(lint): add SCSS compilation check script to catch run time scss errors
+- Add scss-check.js to validate SCSS syntax across all files
+- Update .gitignore to exclude .lintErrors files
+- Adjust Stylelint rules to relax class and keyframe patterns
+- Add Makefile target for lint-scss+
+
+
+3f9d6d9 chore(lint): add Stylelint for SCSS linting
+- Configure Stylelint with standard SCSS rules
+- Add lint:scss script to package.json
+- Add Makefile targets for linting (lint and lint-scss)
+- Enforce SCSS best practices (no undefined vars, proper namespacing)
+
+
+b04d171 feat(user): update back button to use Link component for navigation
+
+
+163fa71 feat(user): add comprehensive user details page with tabbed interface
+- Create UserDetails component with profile card and navigation tabs
+- Display user personal info, employment, socials, and guarantor data
+- Implement star rating for user tier and action buttons (blacklist/activate)
+- Add back navigation and responsive layout support
+- Include loading skeletons and error states
+- Add default avatar and star icon assets
+
+
+b43cc1e feat(dashboard): add user statistics cards component
+- Display key metrics: total users, active users, users with loans/savings
+- Add fancy SVG icons with color-coded backgrounds
+- Implement loading skeleton and error states
+- Integrate statistics on users page with proper layout spacing
+
+
+76a9beb Merge branch 'main' of github.com:samuraicoderr/lendsqr-assesment-project
+
+
+4b37b75 feat(table): add standalone Paginator component with flexible placement
+- Extract pagination logic into reusable Paginator component
+- Support pagination placement inside or outside table container
+- Add items per page selector with configurable options
+- Implement ellipsis logic for large page ranges
+- Improve responsive behavior and accessibility
+- Integrate new paginator with UserTable data fetching
+
+
+af65bf8 feat(table): add standalone Paginator component with flexible placement
+- Extract pagination logic into reusable Paginator component
+- Support pagination placement inside or outside table container
+- Add items per page selector with configurable options
+- Implement ellipsis logic for large page ranges
+- Improve responsive behavior and accessibility
+- Integrate new paginator with UserTable data fetching
+
+
+f125451 fix(GenericTable): simplify menu close logic and improve event handling
+
+
+a17d9d4 fix(table): improve filter dropdown positioning with Popper.js
+- Replace manual position calculation with Popper.js for accurate dropdown placement
+- Render filter dropdown in portal to avoid overflow clipping
+- Add responsive positioning (bottom on mobile, bottom-end on desktop)
+- Implement proper cleanup of Popper instances on resize/close
+- Fix dropdown max-width for small viewports
+
+
+14fcb33 feat(GenericTable): enhance dropdown positioning and menu interactions
+
+
+d91c0ff feat(users): enhance user table with filtering, tooltips, and navigation
+- Add comprehensive filter dropdown with multiple field types
+- Implement row click navigation to user details page
+- Add status tooltips for better user experience
+- Replace icon components with SVG assets for consistency
+- Make email and phone number clickable with mailto/tel links
+- Improve table accessibility and styling
+- Add react-tooltip dependency
+
+
+13df9a0 feat: add GenericTable and UserTable components for enhanced data display and management
+- Implemented GenericTable component with sorting, filtering, and pagination capabilities.
+- Created UserTable component to manage user data, including viewing and updating user statuses.
+- Integrated user data filtering and pagination logic in UserTable.
+- Added necessary icons and styles for improved UI/UX.
+
+
+f712dfb feat(sidebar): update sidebar to use SVG icons and improve styling
+
+
+9b1e6ce feat(dashboard): implement navbar, sidebar, and dashboard layout structure
+- Add responsive Navbar with search, notifications, and user menu
+- Create collapsible Sidebar with navigation sections and organization switcher
+- Setup dashboard layout wrapper with mobile menu support
+- Add icon assets and animated loading screen
+- Remove default Next.js boilerplate pages and styles
+- Install react-icons and fontawesome dependencies
+
+
+0af91f1 feat(auth): implement complete authentication UI with form validation
+- Add reusable auth layout with split-view design
+- Create login page with email/password validation
+- Add forgot password flow with email submission
+- Implement comprehensive SCSS module with design tokens
+- Add centralized route constants (FrontendLinks)
+- Include loading states, animations, and accessibility features
+
+
+05d8714 chore: made AvernirNext the default font
+
+
+5f6ea39 chore: add authentication pages, dashboard routes, and testing setup
+- Add login, register, dashboard, and user pages
+- Configure Sass for styling with SCSS modules
+- Add Jest and Testing Library for unit testing
+- Migrate global styles to SCSS with variables/mixins
+- Update app metadata and favicon
+
+
+4e6246d Initial commit from Create Next App
+

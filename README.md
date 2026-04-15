@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lendsqr Frontend Assessment
+
+## Overview
+
+This project is a frontend implementation of a Lendsqr-style loan operations dashboard. It includes authentication, protected dashboard routes, reusable data-table patterns, and rich list/detail workflows across users, loans, transactions, reports, and related modules.
+
+The app is built with Next.js App Router and uses local mock API route handlers to keep the assessment reproducible while preserving realistic frontend architecture (service layer, API client, token lifecycle, and typed domain models).
+
+## Live Demo
+
+- Live URL: https://williams-samuel-lendsqr-fe-test.vercel.app/
+- GitHub: https://github.com/samuraicoderr/lendsqr-fe-test
+
+## Features
+
+- Authentication flow with protected dashboard routes
+- Reusable `GenericTable` with sorting, filtering, row actions, and pagination
+- Dynamic detail routes for all core modules (`[id]` pages)
+- API client with retries, timeouts, interceptors, and token refresh flow
+- Service-layer caching and in-flight request de-duplication
+- Responsive dashboard shell (navbar, sidebar, notifications panel)
+- Unit/component tests for helper utilities and UI primitives
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- React 19 + TypeScript
+- SCSS Modules + shared style tokens/mixins
+- Zustand (auth/token state persistence)
+- @popperjs/core (filter dropdown positioning)
+- react-tooltip (status tooltips)
+- Jest + Testing Library
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js (recommended: 22.x)
+- npm
+
+### Install
+
+```bash
+npm install
+```
+
+### Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```text
+src/
+	app/                 # App Router pages, layouts, mock API route handlers
+	components/          # Reusable UI and domain layout components
+	lib/
+		api/               # ApiClient, auth providers, services, domain types
+		FrontendLinks.ts   # Frontend route constants
+		BackendLinks.ts    # Backend/mock API route constants
+	styles/              # Global SCSS tokens, mixins, base utilities
+.docs/
+	screenshots/         # Submission screenshots
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Decisions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Used Next.js route handlers under `src/app/mock-api/**` to simulate backend capabilities (filtering, pagination, PATCH/PUT), enabling realistic UI-to-API workflows without external dependencies.
+- Centralized transport concerns in `ApiClient` and auth/token concerns in `authContext` + `TokenManager`.
+- Kept view state local in feature components while persisting only auth continuity data via Zustand + `localStorage`.
+- Implemented reusable table infrastructure (`GenericTable` + `Paginator`) to keep behavior consistent across many dashboard domains.
+- Adopted Popper.js + portal rendering for robust dropdown behavior in constrained/scrollable table layouts.
 
-## Deploy on Vercel
+## Testing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Run all tests:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm test -- --runInBand
+```
+
+Current test coverage includes:
+- Utility logic (`cn`, `interpretServerError`)
+- Route helper modules (`FrontendLinks`, `BackendLinks`)
+- Auth redirect safety helpers
+- UI components (`ConfirmModal`, `StatusPill`)
+
+## Screenshots
+
+### Login
+![Login Screen](.docs/screenshots/login-screen.png)
+
+### Dashboard
+![Dashboard Screen](.docs/screenshots/dashboard-screen.png)
+
+### Users
+![Users List Screen](.docs/screenshots/users-list-screen.png)
+
+### User Details
+![User Details Screen](.docs/screenshots/users-detail-screen.png)
+
+## Additional Submission Documentation
+
+For the full engineering write-up (architecture, trade-offs, challenges, and decisions), see:
+
+- `.docs/submission-documentation.md`
